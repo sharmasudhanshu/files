@@ -1,0 +1,68 @@
+pipeline {
+  agent any
+stages {
+  stage('copy Dockerfile') {
+      agent any
+      steps {
+        sh 'cp  /root/nodejsStacklightportal/dockerfile_prod $WORKSPACE/Dockerfile'
+      }
+    }
+  stage('Docker Build') {
+      agent any
+      steps {
+        sh 'docker build --no-cache -t 10.157.250.98:5000/slenodeportalprod:${BUILD_NUMBER}  .'
+      }
+    }
+    stage('Docker Push') {
+      agent any
+      steps {
+          sh 'docker push 10.157.250.98:5000/slenodeportalprod:${BUILD_NUMBER}'
+        }
+      }
+    }
+ }
+
+###################################################################################
+
+pipeline {
+  agent any
+stages {
+    	 stage('Checkout external proj') {
+        steps {
+            git branch: 'master',
+                credentialsId: '1ee69b9e-e4b0-421a-80a7-b6814224c8e8',
+                url: 'https://gitlab.com/jioaws/stacklight_extn_portal_api.git'
+        }
+    }
+        
+    stage('copy appy.py & requirements.txt') {
+      agent any
+      steps {
+        sh 'cp /var/lib/jenkins/workspace/sleportalproxy_prod/*  $WORKSPACE/'		
+      }
+    }
+ 
+  stage('copy Dockerfile') {
+      agent any
+      steps {
+        sh 'cp  /root/sle2proxy/Dockerfile_proxy  $WORKSPACE/Dockerfile'
+      }
+    }
+  stage('Docker Build') {
+      agent any
+      steps {
+        sh 'docker build  --no-cache -t 10.157.250.98:5000/sleportalproxyprod:${BUILD_NUMBER}  .'
+      }
+    }
+    stage('Docker Push') {
+      agent any
+      steps {
+          sh 'docker push 10.157.250.98:5000/sleportalproxyprod:${BUILD_NUMBER}'
+        }
+      }
+    }
+ }
+
+
+####################################################################################
+
