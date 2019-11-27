@@ -1,0 +1,39 @@
+### install ffmpeg & openssl first
+
+FROM centosffmpega
+
+
+RUN mkdir -p /usrdata/apps/appserver/apache-tomcat-7.0.56/ && mkdir /usrdata/apps/java &&  mkdir /usrdata/SwiftCache &&  mkdir /usrdat mkdir /usrdata/mediaserver &&   mkdir /usrdata/archive &&   mkdir /usrdata/apps/jiolib &&   mkdir /usrdata/apps/sysapps &&  mkdir /us/usrdata/SwiftCache/Apps &&  mkdir /usrdata/SwiftCache/Upload &&  mkdir /usrdata/SwiftCache/Thumbnails
+
+RUN groupadd servicesusrgroup
+RUN useradd -d /home/jersey -m -N -g servicesusrgroup -c 'User to Run Services' jersey
+
+COPY apache-tomcat-7.0.56.tar.gz /usrdata/apps/appserver/apache-tomcat-7.0.56/apache-tomcat-7.0.56.tar.gz
+COPY conf.tar.gz  /usrdata/apps/appserver/apache-tomcat-7.0.56/
+COPY bin.tar.gz  /usrdata/apps/appserver/apache-tomcat-7.0.56/
+COPY lib.tar.gz /usrdata/apps/appserver/apache-tomcat-7.0.56/
+COPY jiolib.tar.gz   /usrdata/apps/
+
+RUN tar -xzf  /usrdata/apps/appserver/apache-tomcat-7.0.56/apache-tomcat-7.0.56.tar.gz -C /usrdata/apps/appserver/ && rm -rf /usrdata/6/webapps/ROOT/*  && rm -rf /usrdata/apps/appserver/apache-tomcat-7.0.56/webapps/docs/* && rm -rf /usrdata/apps/appserver/apache-tomca-rf /usrdata/apps/appserver/apache-tomcat-7.0.56/webapps/manager/* && rm -rf /usrdata/apps/appserver/apache-tomcat-7.0.56/webapps/host
+RUN tar -xzf  /usrdata/apps/appserver/apache-tomcat-7.0.56/conf.tar.gz  -C /usrdata/apps/appserver/apache-tomcat-7.0.56/
+RUN tar -xzf  /usrdata/apps/appserver/apache-tomcat-7.0.56/bin.tar.gz  -C /usrdata/apps/appserver/apache-tomcat-7.0.56/
+RUN tar -xzf  /usrdata/apps/appserver/apache-tomcat-7.0.56/lib.tar.gz  -C /usrdata/apps/appserver/apache-tomcat-7.0.56/
+
+RUN tar -xzf /usrdata/apps/jiolib.tar.gz -C /usrdata/apps/
+COPY  server-jre-7u76-linux-x64.tar.gz  /usrdata/apps/
+RUN tar -xzf  /usrdata/apps/server-jre-7u76-linux-x64.tar.gz -C /usrdata/apps/java
+
+RUN update-alternatives --install /usr/bin/java java /usrdata/apps/java/jdk1.7.0_76/bin/java 100 --slave /usr/bin/keytool keytool /usrtool --slave /usr/bin/rmiregistry rmiregistry /usrdata/apps/java/jdk1.7.0_76/bin/rmiregistry
+RUN update-alternatives --install /usr/bin/javac javac /usrdata/apps/java/jdk1.7.0_76/bin/javac 100 --slave /usr/bin/jar jar /usrdata/ave /usr/bin/rmic rmic /usrdata/apps/java/jdk1.7.0_76/bin/rmic
+RUN update-alternatives --install /usr/bin/servertool servertool /usrdata/apps/java/jdk1.7.0_76/bin/servertool 100
+RUN echo -n | openssl s_client -connect 10.147.202.80:5000 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/examplecert.crt
+RUN keytool -import -trustcacerts -keystore  /usrdata/apps/java/jdk1.7.0_76/jre/lib/security/cacerts  -storepass changeit -noprompt -a/tmp/examplecert.crt
+
+
+
+COPY snw.war /usrdata/apps/appserver/apache-tomcat-7.0.56/webapps/
+ADD default.conftomcat  /docker-entrypoint.sh
+RUN chmod 755 /docker-entrypoint.sh
+RUN chmod 755 /docker-entrypoint.sh
+ENTRYPOINT /docker-entrypoint.sh
+

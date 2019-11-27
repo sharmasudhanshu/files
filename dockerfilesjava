@@ -1,0 +1,20 @@
+
+
+
+RUN groupadd servicesusrgroup
+RUN useradd -d /home/jersey -m -N -g servicesusrgroup -c 'User to Run Services' jersey
+
+
+
+
+
+RUN tar -xzf /usrdata/apps/jiolib.tar.gz -C /usrdata/apps/
+COPY  server-jre-7u76-linux-x64.tar.gz  /usrdata/apps/
+RUN tar -xzf  /usrdata/apps/server-jre-7u76-linux-x64.tar.gz -C /usrdata/apps/java
+
+RUN update-alternatives --install /usr/bin/java java /usrdata/apps/java/jdk1.7.0_76/bin/java 100 --slave /usr/bin/keytool keytool /usrdata/apps/java/jdk1.7.0_76/bin/keytool --slave /usr/bin/rmiregistry rmiregistry /usrdata/apps/java/jdk1.7.0_76/bin/rmiregistry
+RUN update-alternatives --install /usr/bin/javac javac /usrdata/apps/java/jdk1.7.0_76/bin/javac 100 --slave /usr/bin/jar jar /usrdata/apps/java/jdk1.7.0_76/bin/jar --slave /usr/bin/rmic rmic /usrdata/apps/java/jdk1.7.0_76/bin/rmic
+RUN update-alternatives --install /usr/bin/servertool servertool /usrdata/apps/java/jdk1.7.0_76/bin/servertool 100
+#RUN echo -n | openssl s_client -connect 10.147.202.80:5000 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > /tmp/examplecert.crt
+COPY jp3swiftcert.crt  /tmp/examplecert.crt
+
